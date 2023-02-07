@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem=32GB
+#SBATCH --mem=2GB
 #SBATCH --time=2-00:00
 #SBATCH --partition=standard
 #SBATCH --output=FastQC-%A-%a.log
