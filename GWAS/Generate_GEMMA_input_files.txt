@@ -12,7 +12,28 @@ phenotypes - corolla width, nectar, all
 relatedness matrix
 (optionally) covariates - year, lat / long?
 
-genotypes to PLINK format
+### genotypes to PLINK format
+
+
+module use /nfs/turbo/rsbaucom/lab/Lmod
+module load bcftools_module
+module list
+export BCFTOOLS_PLUGINS=/nfs/turbo/rsbaucom/lab/SOFTWARE/bcftools/plugins
+
+#Combine phased_VCFs into a single genome-wide phased vcf
+
+for F in *.vcf.gz ; do bcftools index ${F}  ; done
+
+bcftools concat Sasha_Ipurp_*_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz -o Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz &
+
+#Convert VCF to Plink
+
+module load Bioinformatics
+module load plink
+
+Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz
+
+
 
 
 module load Bioinformatics
@@ -23,4 +44,6 @@ phenotypes to PLINK format
 
 
 generate relatedness matrix
+
+
 
