@@ -1,0 +1,6 @@
+module load Bioinformatics
+module load Bioinformatics  gcc/10.3.0-k2osx5y
+module load bwa/0.7.17-mil4ns7
+
+
+nohup bwa index /nfs/turbo/rsbaucom/lab/IP_genome_COGE/Ipomoea_purpurea_headings_fixed.faa &

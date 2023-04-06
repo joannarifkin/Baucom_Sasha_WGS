@@ -1,18 +1,16 @@
 #!/bin/bash
 
-
 #SBATCH --account=rsbaucom1
 #SBATCH --job-name=Trim_galore_Rifkin
 #SBATCH --mail-user=#SBATCH --mail-user=jlrifkin@umich.edu
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=4 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
-#SBATCH --mem-per-cpu=1GB 
+#SBATCH --mem=12GB 
 #SBATCH --time=1-00:00
 #SBATCH --partition=standard
 #SBATCH --output=Trim_galore-%A-%a.log
-#SBATCH --array=1-188
+#SBATCH --array=1-94%25
 
 module purge
 module load Bioinformatics
@@ -25,4 +23,4 @@ echo $file
 samplename=${file%*_R1_*.fastq.gz}
 echo $samplename
 
-trim_galore --fastqc -q 20 --paired --output_dir Trim_galore --cores 4 $samplename\_R1_001.fastq.gz $samplename\_R2_001.fastq.gz
+trim_galore --fastqc -q 20 --paired --output_dir /scratch/rsbaucom_root/rsbaucom0/jlrifkin/IP_WGS_intermediates/Trim_galore --cores 4 $samplename\_R1_001.fastq.gz $samplename\_R2_001.fastq.gz

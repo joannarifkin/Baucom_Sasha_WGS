@@ -1,0 +1,26 @@
+
+module purge
+module use /nfs/turbo/rsbaucom/lab/Lmod #To use the Baucom lab version, use these lines. To use a local version you add to your path, omit them.
+module load gemma_module
+module list
+
+gemma-0.98.5-linux-static-AMD64
+
+
+genotypes - 2003, 2012, 2016, all
+phenotypes - corolla width, nectar, all
+relatedness matrix
+(optionally) covariates - year, lat / long?
+
+genotypes to PLINK format
+
+
+module load Bioinformatics
+module load plink/1.9
+
+
+phenotypes to PLINK format
+
+
+generate relatedness matrix
+

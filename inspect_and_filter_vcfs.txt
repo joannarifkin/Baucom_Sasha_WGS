@@ -1,0 +1,111 @@
+module purge
+module use /nfs/turbo/rsbaucom/lab/Lmod
+module load bcftools_module
+module load Bioinformatics
+module load vcflib/1.0.1+dfsg-3
+module load vcftools
+module list
+
+#Following https://speciationgenomics.github.io/filtering_vcfs/
+
+/nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/filter
+
+#Randomly subsample VCFs
+
+for i in {1..15}
+do
+bcftools view ../raw_Ipomoea_call_SNPs_Sasha_Ipurp_chr$i\_2-16-2023.vcf.gz | vcflib vcfrandomsample -r 0.01 > chr$i\_raw_subset.vcf 
+done
+
+#Allele frequencies
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --freq2 --out $i\freq --max-alleles 2
+done
+
+
+#Individual mean depth
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --depth --out $i\_depth 
+done
+
+
+#Site depth
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --site-mean-depth --out $i\_site_depth 
+done
+
+#Site quality
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --site-quality --out $i\_site_qual 
+done
+
+#Missing per individual
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --missing-indv --out $i\_missing_indv 
+done
+
+
+#Missing per site
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --missing-site --out $i\_site_missing 
+done
+
+
+#Heterozygosity
+for i in {1..15}
+do
+vcftools --vcf chr$i\_raw_subset.vcf --het --out $i\_het 
+done
+
+
+#Filters
+
+# setting filters to: 
+MAF=0.02 #Must occur in more than one individual
+MISS=0.9 #Must occur in at least 90% of individuals
+QUAL=30 #Quality minimum 30
+MIN_DEPTH=10 #SNPs must be covered by both 10 reads on average AND 10 reads per site
+MAX_DEPTH=100 #SNPs should have a depth of no more than 100 reads on average AND 100 reads per site
+
+
+for i in {1..15}
+do
+vcftools --gzvcf ../raw_Ipomoea_call_SNPs_Sasha_Ipurp_chr$i\_2-16-2023.vcf.gz \
+--remove-indels --maf 0.02 --max-missing 0.9 --minQ 30 \
+--min-meanDP 10 --max-meanDP 100 \
+--minDP 10 --maxDP 100 --recode --stdout | gzip -c > \
+Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz 
+done
+
+for i in {1..15}
+do
+echo $i
+zcat Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz | wc -l 
+done 
+
+
+vcftools --gzvcf ../raw_Ipomoea_call_SNPs_Sasha_Ipurp_scaffold16_2-16-2023.vcf.gz \
+--remove-indels --maf 0.02 --max-missing 0.9 --minQ 30 \
+--min-meanDP 10 --max-meanDP 100 \
+--minDP 10 --maxDP 100 --recode --stdout | gzip -c > \
+Sasha_Ipurp_scaffold16_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz &
+
+
+vcftools --gzvcf ../raw_Ipomoea_call_SNPs_Sasha_Ipurp_scaffold17_2-16-2023.vcf.gz \
+--remove-indels --maf 0.02 --max-missing 0.9 --minQ 30 \
+--min-meanDP 10 --max-meanDP 100 \
+--minDP 10 --maxDP 100 --recode --stdout | gzip -c > \
+Sasha_Ipurp_scaffold17_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz &
+
+for i in {1..15}
+do
+echo $i
+zcat Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz | wc -l 
+done 
+

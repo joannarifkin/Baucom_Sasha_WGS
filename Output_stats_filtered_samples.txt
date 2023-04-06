@@ -1,0 +1,55 @@
+module purge
+module use /nfs/turbo/rsbaucom/lab/Lmod
+module load bcftools_module
+module load Bioinformatics
+module load vcflib/1.0.1+dfsg-3
+module load vcftools
+module list
+
+#Site depth
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --site-mean-depth --keep 2003_samples.txt --out $i\_2003_filtered_site_depth 
+	done
+	
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --site-mean-depth --keep 2012_samples.txt --out $i\_2012_filtered_site_depth 
+	done
+	
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --site-mean-depth --keep 2016_samples.txt --out $i\_2016_filtered_site_depth 
+	done &
+	
+
+#Allele frequencies
+
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --freq2 --keep 2003_samples.txt --out $i\_2003_filtered_allele_freq --max-alleles 2
+	done &
+
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --freq2 --keep 2012_samples.txt --out $i\_2012_filtered_allele_freq --max-alleles 2
+	done &
+
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --freq2 --keep 2016_samples.txt --out $i\_2016_filtered_allele_freq --max-alleles 2
+	done &
+
+#FST 2003 vs 2012
+
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --weir-fst-pop 2003_samples.txt --weir-fst-pop 2012_samples.txt --out $i\_fst_2003_2012 
+	done &
+
+#FST 2003 vs 2016
+
+	for i in {1..15}
+	do
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --weir-fst-pop 2003_samples.txt --weir-fst-pop 2016_samples.txt --out $i\_fst_2003_2016 
+	done &
