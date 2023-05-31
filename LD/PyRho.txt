@@ -1,0 +1,31 @@
+
+pip3 install pyrho/ --user 
+
+conda create -n my-pyrho-env
+conda activate my-pyrho-env
+
+conda create --name my-new-pyrho-env python=3.7 pip #Necessary for correct version of future
+conda activate my-new-pyrho-env
+
+
+git clone https://github.com/popgenmethods/ldpop.git ldpop
+pip3 install ldpop/ --user
+
+
+pip3 install . --user
+
+pip3 install cython --user
+ 
+
+git clone https://github.com/popgenmethods/pyrho.git pyrho
+pip3 install pyrho/ --user 
+
+
+python3 -m pytest pyrho/tests/tests.py
+
+NB: the first time you run pyrho, numba will compile and cache a number
+
+
+
+
+

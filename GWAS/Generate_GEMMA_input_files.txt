@@ -5,7 +5,9 @@ module load gemma_module
 module list
 
 gemma-0.98.5-linux-static-AMD64
+ln -s gemma-0.98.5-linux-static-AMD64 gemma #softlink "gemma" to the full name
 
+/nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/GWAS
 
 genotypes - 2003, 2012, 2016, all
 phenotypes - corolla width, nectar, all
@@ -20,30 +22,250 @@ module load bcftools_module
 module list
 export BCFTOOLS_PLUGINS=/nfs/turbo/rsbaucom/lab/SOFTWARE/bcftools/plugins
 
-#Combine phased_VCFs into a single genome-wide phased vcf
+#Combine phased VCFs into a single genome-wide phased vcf
 
-for F in *.vcf.gz ; do bcftools index ${F}  ; done
+	for F in *.vcf.gz ; do bcftools index ${F}  ; done
 
-bcftools concat Sasha_Ipurp_*_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz -o Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz &
+	bcftools concat Sasha_Ipurp_*_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz -o Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz &
+
+#Make phased genome-wide VCFs for each year of data
+
+module load Bioinformatics
+module load vcftools
+
+	vcftools --gzvcf input_file.vcf.gz --remove-filtered-all --recode --stdout | gzip -c > output_PASS_only.vcf.gz
+
+
+	vcftools --gzvcf ../Sasha_Ipurp_chr$i\_maf0.02_miss0.9_q30_dp10.100_filtered.vcf.gz --site-mean-depth --keep 2003_samples.txt --out $i\_2003_filtered_site_depth 
+
+	vcftools --gzvcf Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz --keep /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/filter/summary_stats_maf0.02_miss0.9_q30_dp10.100/2003_samples.txt --recode --stdout | pigz -c > Sasha_Ipurp_all_filtered_phased_2003.vcf.gz &
+
+	vcftools --gzvcf Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz --keep /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/filter/summary_stats_maf0.02_miss0.9_q30_dp10.100/2012_samples.txt --recode --stdout | pigz -c > Sasha_Ipurp_all_filtered_phased_2012.vcf.gz &
+
+	vcftools --gzvcf Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz --keep /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/filter/summary_stats_maf0.02_miss0.9_q30_dp10.100/2016_samples.txt --recode --stdout | pigz -c > Sasha_Ipurp_all_filtered_phased_2016.vcf.gz &
+
+
+
 
 #Convert VCF to Plink
 
 module load Bioinformatics
 module load plink
 
-Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz
+plink --allow-extra-chr --max-alleles 2 --vcf /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/Sasha_Ipurp_all_filtered_phased_2003.vcf.gz --make-bed --out Sasha_Ipurp_all_filtered_phased_2003 &
+
+
+plink --allow-extra-chr --max-alleles 2 --vcf /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/Sasha_Ipurp_all_filtered_phased_2012.vcf.gz  --make-bed --out Sasha_Ipurp_all_filtered_phased_2012 &
+
+
+plink --allow-extra-chr --max-alleles 2 --vcf /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/Sasha_Ipurp_all_filtered_phased_2016.vcf.gz  --make-bed --out Sasha_Ipurp_all_filtered_phased_2016 &
+
+#Create symbolic links to all input files 
+
+for trait in corolla nectar
+do
+for year in 2003 2012
+do
+
+ln -s Sasha_Ipurp_all_filtered_phased_${year}.bed Sasha_Ipurp_all_filtered_phased_${year}_${trait}.bed
+ln -s Sasha_Ipurp_all_filtered_phased_${year}.bim Sasha_Ipurp_all_filtered_phased_${year}_${trait}.bim
+cp Sasha_Ipurp_all_filtered_phased_${year}.fam Sasha_Ipurp_all_filtered_phased_${year}_${trait}.fam
+
+done
+done
+
+#Manually edit .fam files so each has phenotype instead of -9 in final column
+
+
+#Generate all relatedness matrices
+bash relatedness.sh
+
+#Contents of relatedness.sh
+	for trait in corolla nectar
+	do
+	for year in 2003 2012
+	do
+	
+	echo $year
+	echo $trait
+	gemma -bfile Sasha_Ipurp_all_filtered_phased_${year}_${trait} -gk 1 -o Sasha_Ipurp_all_filtered_phased_${year}_${trait} 
+
+	done
+	done
+
+#Run GWAS using run_all_GWAS.sh (missing corolla 2003 because that was run separately)
+
+
+
+#Subsample for plotting
+sed -n '1~100p' Sasha_Ipurp_all_filtered_phased_2003_corolla.assoc.txt > Sasha_Ipurp_all_filtered_phased_2003_corolla_downsample.assoc.txt 
+
+sed -n '1~100p' Sasha_Ipurp_all_filtered_phased_2003_nectar.assoc.txt > Sasha_Ipurp_all_filtered_phased_2003_nectar_downsample.assoc.txt 
+
+sed -n '1~100p' Sasha_Ipurp_all_filtered_phased_2012_corolla.assoc.txt > Sasha_Ipurp_all_filtered_phased_2012_corolla_downsample.assoc.txt 
+
+sed -n '1~100p' Sasha_Ipurp_all_filtered_phased_2012_nectar.assoc.txt > Sasha_Ipurp_all_filtered_phased_2012_nectar_downsample.assoc.txt 
+
+
+
+Sasha_Ipurp_all_filtered_phased_2003_corolla_downsample.assoc.txt
 
 
 
 
-module load Bioinformatics
-module load plink/1.9
-
-
-phenotypes to PLINK format
-
-
-generate relatedness matrix
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module use /nfs/turbo/rsbaucom/lab/Lmod #To use the Baucom lab version, use these lines. To use a local version you add to your path, omit them.
+module load gemma_module
+module list
+
+	#Manually edit .fam file to include corolla widths
+
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bed Sasha_Ipurp_all_filtered_phased_2003_corolla.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bim Sasha_Ipurp_all_filtered_phased_2003_corolla.bim
+cp Sasha_Ipurp_all_filtered_phased_2003.fam Sasha_Ipurp_all_filtered_phased_2003_corolla.fam
+
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_corolla -gk 1 -o Sasha_Ipurp_all_filtered_phased_2003_corolla &
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_corolla -k output/Sasha_Ipurp_all_filtered_phased_2003_corolla.cXX.txt -lmm 4 -o Sasha_Ipurp_all_filtered_phased_2003_corolla &
+
+#Run analysis for corolla size 
+
+module use /nfs/turbo/rsbaucom/lab/Lmod #To use the Baucom lab version, use these lines. To use a local version you add to your path, omit them.
+module load gemma_module
+module list
+
+	#Create symlinks to the genotype files 
+	
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bed Sasha_Ipurp_all_filtered_phased_2003_corolla.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bim Sasha_Ipurp_all_filtered_phased_2003_corolla.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2003.fam Sasha_Ipurp_all_filtered_phased_2003_corolla.fam [edit in Excel]
+
+	#Generate relatedness matrix
+
+"Which of the two relatedness matrix to choose will largely depend on the underlying genetic architecture of the given trait. Specifically, if SNPs with lower minor allele frequency tend to have larger effects (which is inversely proportional to its genotype variance), then the standardized genotype matrix is preferred. If the SNP effect size does not depend on its minor allele frequency, then the centered genotype matrix is preferred. In our previous experience based on a limited examples, we typically find the centered genotype matrix provides better control for population structure in lower organisms, and the two matrices seem to perform similarly in humans."
+
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_corolla -gk 1 -o Sasha_Ipurp_all_filtered_phased_2003_corolla &
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_corolla -k output/Sasha_Ipurp_all_filtered_phased_2003_corolla.cXX.txt -lmm 4 -o Sasha_Ipurp_all_filtered_phased_2003_corolla &
+
+#Subsample for inspection
+
+sed -n '1~10p' Sasha_Ipurp_all_filtered_phased_2003_normBrix.assoc.txt > 2003_norm_brix_downsample.assoc.txt
+
+2012
+
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bed Sasha_Ipurp_all_filtered_phased_2012_corolla.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bim Sasha_Ipurp_all_filtered_phased_2012_corolla.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2012.fam Sasha_Ipurp_all_filtered_phased_2012_corolla.fam #[edit in Excel]
+
+
+#Run analysis for brix adj 
+
+	#Create symlinks to the genotype files 
+	
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bed Sasha_Ipurp_all_filtered_phased_2003_brix_adj.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bim Sasha_Ipurp_all_filtered_phased_2003_brix_adj.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2003.fam Sasha_Ipurp_all_filtered_phased_2003_brix_adj.fam [edit in Excel]
+
+
+	#Generate relatedness matrix
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_brix_adj -gk 1 -o Sasha_Ipurp_all_filtered_phased_2003_brix_adj &
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_brix_adj -k output/Sasha_Ipurp_all_filtered_phased_2003_brix_adj.cXX.txt -lmm 4 -o Sasha_Ipurp_all_filtered_phased_2003_brix_adj &
+
+sed -n '1~10p' Sasha_Ipurp_all_filtered_phased_2003_corolla.assoc.txt > 2003_corolla_downsample.assoc.txt
+
+#2012
+	
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bed Sasha_Ipurp_all_filtered_phased_2012_brix_adj.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bim Sasha_Ipurp_all_filtered_phased_2012_brix_adj.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2012.fam Sasha_Ipurp_all_filtered_phased_2012_brix_adj.fam # [edit in Excel]
+
+
+#Run analysis for normBrix
+
+
+	#Create symlinks to the genotype files 
+	
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bed Sasha_Ipurp_all_filtered_phased_2003_normBrix.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2003.bim Sasha_Ipurp_all_filtered_phased_2003_normBrix.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2003.fam Sasha_Ipurp_all_filtered_phased_2003_normBrix.fam [edit in Excel]
+
+	#Generate relatedness matrix
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_normBrix -gk 1 -o Sasha_Ipurp_all_filtered_phased_2003_normBrix &
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2003_normBrix -k output/Sasha_Ipurp_all_filtered_phased_2003_normBrix.cXX.txt -lmm 4 -o Sasha_Ipurp_all_filtered_phased_2003_normBrix &
+
+
+#2012
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bed Sasha_Ipurp_all_filtered_phased_2012_normBrix.bed
+ln -s Sasha_Ipurp_all_filtered_phased_2012.bim Sasha_Ipurp_all_filtered_phased_2012_normBrix.bim
+
+	#Manually edit .fam file to include corolla widths
+
+cp Sasha_Ipurp_all_filtered_phased_2012.fam Sasha_Ipurp_all_filtered_phased_2012_normBrix.fam #[edit in Excel]
+
+
+
+#Scan top values in raw files 
+
+sort -rgk29,29 2003_norm_brix_downsample.assoc.txt | less
+head -1 | cut -d ' ' -f3
+
+#15
+Ipurp_chr12     .       3485284 0       G       C       0.237   -2.314109e-06   1.805482e-01    -3.691776e+01   1.000000e-05    1.000000e-05    9.999898e-01    9.999895e-01    9.999896e-01
+#20
+Ipurp_scaffold16        .       97663   0       A       G       0.938   -1.351052e-02   2.986962e-01    -3.691668e+01   1.000000e-05    1.000000e-05    9.641595e-01    9.629866e-01    9.632301e-01
+
+
+
+
+
+
+
+#Why not =1 on diagonals? https://www.biostars.org/p/335406/ 
+
+	#manually edit .fam file and test with dummy data
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2016 -gk 1 -o Sasha_Ipurp_all_filtered_phased_2016 &
+
+#Run GEMMA with dummy data
+
+gemma -bfile Sasha_Ipurp_all_filtered_phased_2016 -k output/Sasha_Ipurp_all_filtered_phased_2016.cXX.txt -lmm 4 -o 2016_dummy_data_demo &
+GSL ERROR: function value is not finite in brent.c at line 57 errno 9 - probably due to small sample size 
+https://cyverse.atlassian.net/wiki/spaces/TUT/pages/258736155/GEMMA

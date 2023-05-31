@@ -1,0 +1,43 @@
+
+java -jar /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -h
+
+
+
+java -jar -Xmx5024m -Xms512M /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -spid Ipomoea_WGS_vcf_bayenv.spid -inputfile  /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/LD_pruned/Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased_LD_pruned.vcf -inputformat VCF -outputfile all_LD_pruned_bayescan -outputformat GESTE_BAYE_SCAN &
+
+
+java -jar -Xmx5024m -Xms512M /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -inputfile /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/example_Structure.txt -inputformat STRUCTURE -outputfile /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/output_Arlequin.arp -outputformat ARLEQUIN -spid /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/Structure_Arlequin.spid
+
+
+INFO  08-05 17:07:42,221 (PGDSpiderConfig.java:loadConfig:64)  -load PGDSpider configuration from: /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/spider.conf.xml
+INFO  08-05 17:07:59,688 (PGDSpiderConfig.java:loadConfig:64)  -load PGDSpider configuration from: /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/spider.conf.xml
+DEBUG 08-05 17:07:59,768 (ParserFactory.java:getParserInstance:173)  -New StructureParser instance
+DEBUG 08-05 17:07:59,797 (ParserFactory.java:getParserInstance:173)  -New StructureParser instance
+INFO  17:07:59 - load PGDSpider configuration from: /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/spider.conf.xml
+Warning: Could not get charToByteConverterClass!
+initialize convert process...
+
+
+java -Xmx1024m -Xms512m -jar /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -inputfile /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/example_Structure.txt -inputformat STRUCTURE -outputfile output_Arlequin.arp -outputformat ARLEQUIN -spid /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/Structure_Arlequin.spid
+
+
+Unable to write outputfile!
+ch.unibe.iee.cmpg.pgdspider.model.exception.ConvertException: java.lang.NullPointerException
+        at ch.unibe.iee.cmpg.pgdspider.model.writer.ArlequinWriter.write(ArlequinWriter.java:719)
+        at ch.unibe.iee.cmpg.pgdspider.cli.CLIController.convert(CLIController.java:258)
+        at ch.unibe.iee.cmpg.pgdspider.PGDSpiderCli.main(PGDSpiderCli.java:31)
+Caused by: java.lang.NullPointerException
+        at ch.unibe.iee.cmpg.pgdspider.model.writer.ArlequinWriter.write(ArlequinWriter.java:290)
+        ... 2 more
+
+module load openjdk/18.0.1.1
+
+java -version
+openjdk version "18.0.1.1" 2022-04-22
+OpenJDK Runtime Environment (build 18.0.1.1+2-6)
+OpenJDK 64-Bit Server VM (build 18.0.1.1+2-6, mixed mode, sharing)
+
+ /home/jlrifkin/.conda/envs/pgdspider_env/bin/PGDSpider2-cli -inputfile /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/example_Structure.txt -inputformat STRUCTURE -outputfile output_Arlequin.arp -outputformat ARLEQUIN -spid /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/Structure_Arlequin.spid
+
+ 
+java -Xmx1024m -Xms512m -jar /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -inputfile /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/example_Structure.txt -inputformat STRUCTURE -outputfile output_Arlequin.arp -outputformat ARLEQUIN -spid /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/examples/Structure_Arlequin.spid

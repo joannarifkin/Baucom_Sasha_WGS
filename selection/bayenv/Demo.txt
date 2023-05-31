@@ -1,0 +1,78 @@
+export PATH="/nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2:$PATH"
+
+
+../../../SOFTWARE/bayenv2/
+
+../../SOFTWARE/bayenv2/hgdp_matrix_1 #Matrix
+../../SOFTWARE/bayenv2/pooled_snps.txt #SNPs (pooled)
+../../SOFTWARE/bayenv2/samplesize.txt #sample size file (pooled mode)
+../../SOFTWARE/bayenv2/hgdp_no_X_37_freqs #SNPsfile
+../../SOFTWARE/bayenv2/rs316 #SNPfile
+../../SOFTWARE/bayenv2/PCs.env #environment file I think
+
+BAYENV 2.0 - Usage
+        ./bayenv2 [OPTIONS]
+
+                -i [filename] - input file (always required)
+                -e [filename] - environmental file (required for test mode)
+                -m [filename] - matrix file (required for test mode)
+                -s [filename] - file of sample sizes (required for pool mode)
+                -k [number] - number of iterations (always required)
+                -r [number] - random seed
+                -p [number] - number of populations (always required)
+                -n [number] - number of environmental variables (required for test mode)
+                -t - Test mode (not matrix estimation)
+                -x - Pool mode
+                -o [filename] - output file (optional)
+                -f - frequency output (X)
+                -c - correlation output
+                -z - calculate Z in test mode for unpooled data (only one environmental variable)
+                -X - calculate XtX
+
+bayenv2 -i ../../SOFTWARE/bayenv2/hgdp_no_X_37_freqs -t -e ../../SOFTWARE/bayenv2/PCs.env -m ../../SOFTWARE/bayenv2/hgdp_matrix_1 -k 10 -p 5 -o test 
+
+./bayenv2 -i SNPSFILE -s SAMPLEFILE -p NUMPOPS -k 200000 -x -r 83556 (Matrix Estimation)
+./bayenv2 -i SNPFILE -s SAMPLEFILE -p NUMPOPS -n 1 -e ENVIRONFIL -t -k 200000 -x -r 436216
+
+bayenv2 -i ../../SOFTWARE/bayenv2/rs316  -m ../../SOFTWARE/bayenv2/hgdp_matrix_1 -e ../../SOFTWARE/bayenv2/PCs.env -p 5 -k 10 -n 5 -t -r 429
+
+bayenv2 -i ../../../SOFTWARE/bayenv2/rs316 -k 10 -p 5  
+
+bayenv2 -i ../../../SOFTWARE/bayenv2/hgdp_no_X_37_freqs -k 10 -p 5 -o test -m ../../SOFTWARE/bayenv2/hgdp_matrix_1 -t -n 1 -e ../../../SOFTWARE/bayenv2/PCs.env
+
+bayenv2 -i ../../../SOFTWARE/bayenv2/pooled_snps -k 10 -p 5 -o test -s ../../../SOFTWARE/bayenv2/samplesize.txt
+
+bayenv2 -i /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/hgdp_no_X_37_freqs -p 52 -k 2000 -r 63479 > matrix.out & #WORKING WORKING WORKING 
+
+./calc_bfs.sh SNPSFILE ENVIRONFILE MATRIXFILE NUMPOPS NUMITER NUMENVIRON
+
+
+export PATH="/nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2:$PATH" 
+calc_bf.sh hgdp_no_X_37_freqs /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env matrix.out 5 2000 1 
+
+split -a 10 -l 2 hgdp_no_X_37_freqs snp_batch
+for f in $(ls snp_batch*)
+do
+bayenv2 -i $f -e /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env -m matrix.out -k 2000 -r 24542 -p 5 -n 3 -t
+done
+
+bayenv2 -i /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/hgdp_no_X_37_freqs -p 52 -k 2000 -r 63479 > matrix.out & #WORKING WORKING WORKING 
+
+
+export PATH="/nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2:$PATH" 
+
+bayenv2 -i one_snp -m matrix.out -e /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env -p 52 -k 2000 -n 5 -t -r 429 -o out 
+
+
+bayenv2 -i one_snp -m hgdp_matrix_1 -e /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env -p 52 -k 100000 -n 4 -t -r 429 -o out #WORKING
+
+
+
+split -a 10 -l 2 minifreqs snp_batch
+
+export PATH="/nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2:$PATH" 
+./calc_bf_mod.sh minifreqs /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env hgdp_matrix_1 52 2000 4
+
+bayenv2 -i snp_batchaaaaaaaaaa -m hgdp_matrix_1 -e /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env -p 52 -k 100000 -n 4 -t -r 429 -o outaaaaaaaaaa #WORKING
+bayenv2 -i snp_batchaaaaaaaaab -m hgdp_matrix_1 -e /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/PCs.env -p 52 -k 100000 -n 4 -t -r 429 -o outaaaaaaaaaa #WORKING
+#Next - build my own version of calc_bf to run through my SNPs

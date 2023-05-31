@@ -1,0 +1,13 @@
+
+for i in {2..16} 
+
+do
+
+echo $i 
+
+cp chr1_bayenv_spid.spid chr$i\_bayenv_spid.spid 
+
+sed -i "s/chr1/chr$i/g" chr$i\_bayenv_spid.spid 
+
+done
+

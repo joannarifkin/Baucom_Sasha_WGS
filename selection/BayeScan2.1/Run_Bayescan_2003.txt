@@ -1,0 +1,11 @@
+#Prepare input with PGDSpider
+
+mkdir BayeScan2_2003_out
+
+{See script}
+
+#Script to run it
+
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1/source/bayescan_2.1 /nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1/input_examples/test_SNPs.txt -threads 4 -n 100 -pilot 100 -burn 100 -od test_out &
+

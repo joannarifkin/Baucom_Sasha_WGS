@@ -1,0 +1,50 @@
+
+/nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/LD/LDHat
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat
+
+module load Bioinformatics
+module load vcftools
+
+bash format_data_for_LDHat.sh & #Run script for loop calling vcftools to format raw data
+
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat/convert -seq chr_14_2016.ldhat.sites -loc chr_14_2016.ldhat.locs &
+
+/ohta/felix.beaudry/scripts/LDhat-master/complete -n 54 -theta 0.006479939 -rhomax 100 -n_pts 101 
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat/pairwise -seq chr_14_2016.ldhat.sites -loc chr_14_2016.ldhat.locs -lk ../lk_n50_t0.1 &
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat/complete -seq chr_14_2016.ldhat.sites -loc chr_14_2016.ldhat.locs -lk ../lk_n50_t0.1.gz &
+
+
+# -n 30 -theta 0.01 -rhomax 100 -n_pts 101 &
+
+
+# Specifically, we used the interval function to estimate variable recombination rates within each of the 16 chromosomes of the pseudoassembly, using a precomputed lookup table for a θ of 0.01 for 192 chromosomes. We then converted rho estimates to genetic distance-based recombination rates (100/4Ner; Ne = 500,000), and used a monotonic spline to extrapolate genetic distance to each SNP in our VCF. https://elifesciences.org/articles/70242#s4
+
+#Example file
+lpl_fn.lk  lpl_fn.locs  lpl_fn.sites
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat/pairwise -seq lpl_fn.sites -loc lpl_fn.locs -lk lpl_fn.lk -exact &
+
+Summary of output data
+
+Segregating sites      =   576804
+Average PWD            = 175404.274
+Watterson theta        = 145596.771
+Tajima D statistic     =    0.803
+Fu and Li D* statistic =    1.210
+Variance PWD           = 3159558647.183
+
+#That's suggesting a theta of 0.25 which seems high ... 
+
+30 chromosomes
+
+
+#Estimate from just one population, one year
+
+vcftools --gzvcf /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/Sasha_Ipurp_all_filtered_phased_2016.vcf.gz --keep ../../../new_bildad_samples_2016.txt --ldhat --chr Ipurp_chr1 --out new_bildad_2016_chr1_10Mb --remove-indels --from-bp 1 --to-bp 10000000 &
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/LDhat/pairwise -seq new_bildad_2016_chr1.ldhat.sites -loc new_bildad_2016_chr1.ldhat.locs &
+

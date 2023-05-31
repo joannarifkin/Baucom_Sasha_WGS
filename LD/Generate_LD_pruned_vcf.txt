@@ -1,0 +1,11 @@
+module load Bioinformatics
+module load plink/2.4a4
+
+
+
+plink2 --make-bed --vcf /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.vcf.gz  --set-all-var-ids @:#\$r,\$a --allow-extra-chr --max-alleles 2 --out Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased &
+
+plink2 --export vcf --allow-extra-chr --extract plink2.prune.in --bed Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.bed --bim Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.bim --fam Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased.fam --out Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased_LD_pruned &
+
+/nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/LD_pruned/Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased_LD_pruned.vcf
+

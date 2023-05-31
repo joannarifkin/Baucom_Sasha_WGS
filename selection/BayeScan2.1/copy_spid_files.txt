@@ -1,0 +1,27 @@
+
+for i in {2..16} 
+
+do
+
+echo $i 
+
+cp convert_vcf_bayescan2_chr1_2003.spid convert_vcf_bayescan2_chr$i\_2003.spid 
+
+sed -i "s/chr1/chr$i/g" convert_vcf_bayescan2_chr$i\_2003.spid 
+
+done
+
+
+
+
+for i in {1..16} 
+
+do
+
+echo $i 
+
+cp ../spids_2003/convert_vcf_bayescan2_chr$i\_2003.spid convert_vcf_bayescan2_chr$i\_2012.spid 
+
+sed -i "s/2003/2012/g" convert_vcf_bayescan2_chr$i\_2012.spid 
+
+done

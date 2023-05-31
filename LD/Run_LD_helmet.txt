@@ -1,0 +1,17 @@
+module load Bioinformatics vcftools
+
+
+vcftools --ldhelmet
+
+
+
+
+
+
+
+
+module purge
+module load intel boost gsl
+cd LDhelmet/example_scripts
+./pade.bash
+

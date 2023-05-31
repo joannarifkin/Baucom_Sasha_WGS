@@ -1,0 +1,50 @@
+/nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1
+
+
+
+ ---------------------------
+ | BayeScan 2.0 usage:     |
+ ---------------------------
+ -help        Prints this help
+ ---------------------------
+ | Input                   |
+ ---------------------------
+ alleles.txt  Name of the genotypes data input file
+ -d discarded Optional input file containing list of loci to discard
+ -snp         Use SNP genotypes matrix
+ ---------------------------
+ | Output                  |
+ ---------------------------
+ -od .        Output file directory, default is the same as program file
+ -o alleles   Output file prefix, default is input file without the extension
+ -fstat       Only estimate F-stats (no selection)
+ -all_trace   Write out MCMC trace also for alpha paremeters (can be a very large file)
+ ---------------------------
+ | Parameters of the chain |
+ ---------------------------
+ -threads n   Number of threads used, default is number of cpu available
+ -n 5000      Number of outputted iterations, default is 5000
+ -thin 10     Thinning interval size, default is 10
+ -nbp 20      Number of pilot runs, default is 20
+ -pilot 5000  Length of pilot runs, default is 5000
+ -burn 50000  Burn-in length, default is 50000
+ ---------------------------
+ | Parameters of the model |
+ ---------------------------
+ -pr_odds 10  Prior odds for the neutral model, default is 10
+ -lb_fis 0    Lower bound for uniform prior on Fis (dominant data), default is 0
+ -hb_fis 1    Higher bound for uniform prior on Fis (dominant data), default is 1
+ -beta_fis    Optional beta prior for Fis (dominant data, m_fis and sd_fis need to be set)
+ -m_fis 0.05  Optional mean for beta prior on Fis (dominant data with -beta_fis)
+ -sd_fis 0.01 Optional std. deviation for beta prior on Fis (dominant data with -beta_fis)
+ -aflp_pc 0.1 Threshold for the recessive genotype as a fraction of maximum band intensity, default is 0.1
+ ---------------------------
+ | Output files            |
+ ---------------------------
+ -out_pilot   Optional output file for pilot runs
+ -out_freq    Optional output file for allele frequencies
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1/input_examples/
+discarded.txt  test_band_intensity_AFLP.txt  test_binary_AFLP.txt  test_genotype_SNP.txt  test_msats.txt  test_SNPs.txt
+
+/nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1/source/bayescan_2.1 /nfs/turbo/rsbaucom/lab/SOFTWARE/BayeScan2.1/input_examples/test_SNPs.txt -threads 4 -n 100 -pilot 100 -burn 100 -od test_out &
