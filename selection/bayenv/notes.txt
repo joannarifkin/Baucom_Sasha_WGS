@@ -1,0 +1,19 @@
+
+/nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/bayenv/run_analysis
+
+
+split -a 10 -l 2 mini_chr1_LD_pruned_bayenv snp_batch
+
+export PATH="/nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2:$PATH" 
+
+#WORKING
+bayenv2 -i snp_batchaaaaaaaaaa -m chr1_matrix_tmp.txt -e ../environ_file.txt -p 16 -k 100000 -n 3 -t -r 429 -X -o outaaaaaaaaaa
+bayenv2 -i snp_batchaaaaaaaaab -m chr1_matrix_tmp.txt -e ../environ_file.txt -p 16 -k 100000 -n 3 -t -r 429 -X -o outaaaaaaaaaa
+bayenv2 -i snp_batchaaaaaaaaac -m chr1_matrix_tmp.txt -e ../environ_file.txt -p 16 -k 100000 -n 3 -t -r 429 -X -o outaaaaaaaaaa
+
+
+ tail -17 chr1_matrix.out
+
+Scaf 16 only
+
+java -jar -Xmx6g -Xms1g /nfs/turbo/rsbaucom/lab/SOFTWARE/PGDSpider_2.1.1.5/PGDSpider2-cli.jar -spid ../spids/chr16_bayenv_spid.spid -inputfile  /nfs/turbo/rsbaucom/lab/IP_WGS_Sasha/vcf/phased/LD_pruned/Sasha_Ipurp_ALL_maf0.02_miss0.9_q30_dp10.100_filtered_phased_LD_pruned.vcf -inputformat VCF -outputfile chr16_LD_pruned_bayenv -od . -outputformat BAYENV 
