@@ -37,3 +37,4 @@ done
 
 #sh /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/calc_bf.sh
 ##sh /nfs/turbo/rsbaucom/lab/SOFTWARE/bayenv2/calc_bf_rho.sh
+#Bayenv2.0 calculates the non-parametric Spearman's rank correlation coecient  in addition to Bayes factors, when the -c flag is set.
